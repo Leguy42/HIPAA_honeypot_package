@@ -1,0 +1,26 @@
+Honeypot Document and Application List for HIPAA-Compliant Medical Practice Simulation
+Generated for secure testing purposes to enhance honeypot legitimacy.
+
+Document Types:
+1. Patient Intake Forms - Contains personal details like name, DOB, SSN, and insurance information.
+2. Medical History Records - Detailed patient health records, including diagnoses and past treatments.
+3. Prescription Logs - Lists of medications prescribed, including dosages and frequencies.
+4. Billing Records - Invoices and payment details tied to patient IDs and insurance claims.
+5. Lab Results - Reports from blood tests, imaging, and other diagnostic procedures.
+6. Appointment Schedules - Calendars with patient names, visit times, and provider details.
+7. Insurance Claim Forms - Documents with policy numbers and treatment codes.
+8. Referral Letters - Correspondence between providers with patient health summaries.
+9. Consent Forms - Signed documents for treatments or data sharing.
+10. Progress Notes - Clinician notes on patient visits, including symptoms and care plans.
+
+Applications:
+1. Electronic Health Record (EHR) System - Simulates a platform like Epic or Cerner for storing patient data.
+2. Practice Management Software - Mimics scheduling and billing systems like Athenahealth.
+3. Patient Portal - Web interface for patients to view records or communicate with providers.
+4. Billing Application - Software for generating and tracking medical invoices.
+5. Telemedicine Platform - Simulated video consultation app with patient login details.
+6. Document Management System - Stores and organizes scanned forms and records.
+7. Prescription Management Tool - Tracks and authorizes e-prescriptions.
+8. Lab Integration Software - Interfaces with fictitious lab systems for test results.
+9. Secure Messaging App - Simulates HIPAA-compliant communication between staff.
+10. Backup and Recovery System - Mimics cloud-based storage for patient data archives.

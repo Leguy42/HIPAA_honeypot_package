@@ -1,0 +1,33 @@
+Honeypot Application Executable Names
+Generated for secure testing purposes to simulate a HIPAA-compliant medical practice environment.
+
+1. Electronic Health Record (EHR) System
+   - Executable: EHRCore.exe
+   - Description: Simulates a central EHR platform for patient data management, resembling systems like Epic or Cerner.
+
+2. Practice Management Software
+   - Executable: PracticeMgr.exe
+   - Description: Mimics scheduling and billing software, similar to Athenahealth or Allscripts.
+
+3. Patient Portal
+   - Executable: PatientConnect.exe
+   - Description: Web-based interface for patient access to records, resembling MyChart-like portals.
+
+4. Billing Application
+   - Executable: MediBill.exe
+   - Description: Software for generating and tracking medical invoices and claims.
+
+5. Telemedicine Platform
+   - Executable: TeleHealth.exe
+   - Description: Simulates a video consultation app with patient and provider login capabilities.
+
+6. Document Management System
+   - Executable: DocVault.exe
+   - Description: Organizes scanned forms and records, mimicking systems like Laserfiche.
+
+7. Prescription Management Tool
+   - Executable: ePrescribe.exe
+   - Description: Handles electronic prescriptions, similar to DrFirst or Surescripts.
+
+8. Lab Integration Software
+   - Execut

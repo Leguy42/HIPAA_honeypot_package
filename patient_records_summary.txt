@@ -1,0 +1,57 @@
+Patient Records Summary - Confidential
+Generated for secure testing purposes only. All data is fictitious.
+
+Patient ID: 1001
+Name: John A. Smith
+DOB: 03/15/1975
+SSN: 123-45-6789
+Address: 123 Elm Street, Springfield, IL 62701
+Phone: (217) 555-0101
+Diagnosis: Type 2 Diabetes
+Prescription: Metformin 500mg, twice daily
+Insurance: Blue Cross Blue Shield, Policy #BCIL789456123
+Last Visit: 07/20/2025
+
+Patient ID: 1002
+Name: Emily R. Johnson
+DOB: 11/22/1983
+SSN: 987-65-4321
+Address: 456 Oak Avenue, Chicago, IL 60614
+Phone: (312) 555-0198
+Diagnosis: Hypertension
+Prescription: Lisinopril 10mg, once daily
+Insurance: Aetna, Policy #AETIL456789123
+Last Visit: 06/15/2025
+
+Patient ID: 1003
+Name: Michael T. Brown
+DOB: 09/10/1965
+SSN: 456-78-9012
+Address: 789 Pine Road, Naperville, IL 60540
+Phone: (630) 555-0123
+Diagnosis: Chronic Asthma
+Prescription: Albuterol Inhaler, as needed
+Insurance: UnitedHealthcare, Policy #UHCIL123456789
+Last Visit: 07/01/2025
+
+Patient ID: 1004
+Name: Sarah L. Davis
+DOB: 04/30/1990
+SSN: 321-54-9876
+Address: 321 Maple Lane, Evanston, IL 60201
+Phone: (847) 555-0145
+Diagnosis: Migraine
+Prescription: Sumatriptan 50mg, as needed
+Insurance: Cigna, Policy #CIGIL987654321
+Last Visit: 07/25/2025
+
+Patient ID: 1005
+Name: David K. Wilson
+DOB: 01/12/1958
+SSN: 654-32-1098
+Address: 654 Birch Street, Aurora, IL 60505
+Phone: (630) 555-0167
+Diagnosis: Coronary Artery Disease
+Prescription: Atorvastatin 40mg, once daily
+Insurance: Medicare, Policy #MEDIL456123789
+Last Visit: 06/30/2025
