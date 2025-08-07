@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedFlow EHR - Electronic Health Records</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #2c3e50;
+            overflow-x: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo::before {
+            content: "🏥";
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .main-container {
+            margin-top: 80px;
+            display: flex;
+            height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: white;
+            border-right: 1px solid #e1e8ed;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .nav-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #f8f9ff;
+            border-left-color: #667eea;
+            color: #667eea;
+        }
+
+        .nav-item::before {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .nav-item:nth-child(1)::before { content: "📊"; }
+        .nav-item:nth-child(2)::before { content: "👥"; }
+        .nav-item:nth-child(3)::before { content: "📝"; }
+        .nav-item:nth-child(4)::before { content: "💊"; }
+        .nav-item:nth-child(5)::before { content: "🧪"; }
+        .nav-item:nth-child(6)::before { content: "📋"; }
+        .nav-item:nth-child(7)::before { content: "💳"; }
+        .nav-item:nth-child(8)::before { content: "📈"; }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            background: #f5f7fa;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            margin-bottom: 2rem;
+            border-left: 5px solid #667eea;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .card-content {
+            padding: 2rem;
+        }
+
+        .patient-list, .record-list {
+            list-style: none;
+        }
+
+        .patient-item, .record-item {
+            padding: 1rem;
+            border-bottom: 1px solid #ecf0f1;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .patient-item:hover, .record-item:hover {
+            background: #f8f9ff;
+        }
+
+        .patient-info h4 {
+            color: #2c3e50;
+            margin-bottom: 0.2rem;
+        }
+
+        .patient-info p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-active { background: #e8f5e8; color: #27ae60; }
+        .status-pending { background: #fff3cd; color: #f39c12; }
+        .status-completed { background: #d1ecf1; color: #3498db; }
+        .status-urgent { background: #f8d7da; color: #e74c3c; }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #ecf0f1;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .btn-secondary:hover {
+            background: #d5dbdb;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left-color: #3498db;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left-color: #f39c12;
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .table th, .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(45deg, #f8f9fa, #e9ecef);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1.1rem;
+            margin: 1rem 0;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0.5rem;
+            }
+            
+            .nav-item {
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">MedFlow EHR</div>
+            <div class="user-info">
+                <span>Dr. Sarah Johnson</span>
+                <button class="btn btn-secondary" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+        <nav class="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active" onclick="showPage('dashboard')">Dashboard</li>
+                <li class="nav-item" onclick="showPage('patients')">Patients</li>
+                <li class="nav-item" onclick="showPage('records')">Medical Records</li>
+                <li class="nav-item" onclick="showPage('medications')">Medications</li>
+                <li class="nav-item" onclick="showPage('lab-results')">Lab Results</li>
+                <li class="nav-item" onclick="showPage('appointments')">Appointments</li>
+                <li class="nav-item" onclick="showPage('billing')">Billing</li>
+                <li class="nav-item" onclick="showPage('reports')">Reports</li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- Dashboard Page -->
+            <div id="dashboard" class="page active">
+                <div class="page-header">
+                    <h1 class="page-title">Dashboard</h1>
+                    <p class="page-subtitle">Welcome back, Dr. Johnson. Here's your practice overview.</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">1,247</div>
+                        <div class="stat-label">Total Patients</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">34</div>
+                        <div class="stat-label">Today's Appointments</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">12</div>
+                        <div class="stat-label">Pending Lab Results</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Critical Alerts</div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Recent Activity</div>
+                    <div class="card-content">
+                        <ul class="record-list">
+                            <li class="record-item">
+                                <div>
+                                    <h4>New patient registered: Maria Rodriguez</h4>
+                                    <p>DOB: 03/15/1985 | Insurance: BlueCross BlueShield</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </li>
+                            <li class="record-item">
+                                <div>
+                                    <h4>Lab results received: John Smith</h4>
+                                    <p>CBC, Lipid Panel | Requires review</p>
+                                </div>
+                                <span class="status-badge status-pending">Pending</span>
+                            </li>
+                            <li class="record-item">
+                                <div>
+                                    <h4>Prescription refill: Emily Davis</h4>
+                                    <p>Metformin 500mg | 90-day supply</p>
+                                </div>
+                                <span class="status-badge status-completed">Completed</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>System Maintenance:</strong> Scheduled maintenance on Sunday, 2:00 AM - 4:00 AM EST. EHR system will be temporarily unavailable.
+                </div>
+            </div>
+
+            <!-- Patients Page -->
+            <div id="patients" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Patient Management</h1>
+                    <p class="page-subtitle">Manage patient records and information</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Patient Directory</div>
+                    <div class="card-content">
+                        <div style="margin-bottom: 1rem;">
+                            <button class="btn btn-primary" onclick="showModal('add-patient')">Add New Patient</button>
+                        </div>
+                        <ul class="patient-list">
+                            <li class="patient-item" onclick="showModal('patient-detail')">
+                                <div class="patient-info">
+                                    <h4>John Smith</h4>
+                                    <p>DOB: 01/15/1978 | MRN: 12345678 | Last Visit: 08/01/2025</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </li>
+                            <li class="patient-item">
+                                <div class="patient-info">
+                                    <h4>Maria Rodriguez</h4>
+                                    <p>DOB: 03/22/1985 | MRN: 12345679 | Last Visit: 08/05/2025</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </li>
+                            <li class="patient-item">
+                                <div class="patient-info">
+                                    <h4>Robert Johnson</h4>
+                                    <p>DOB: 07/08/1965 | MRN: 12345680 | Last Visit: 07/28/2025</p>
+                                </div>
+                                <span class="status-badge status-pending">Follow-up Needed</span>
+                            </li>
+                            <li class="patient-item">
+                                <div class="patient-info">
+                                    <h4>Emily Davis</h4>
+                                    <p>DOB: 11/03/1992 | MRN: 12345681 | Last Visit: 08/03/2025</p>
+                                </div>
+                                <span class="status-badge status-active">Active</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical Records Page -->
+            <div id="records" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Medical Records</h1>
+                    <p class="page-subtitle">Electronic health records and clinical documentation</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Recent Records</div>
+                    <div class="card-content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Record Type</th>
+                                    <th>Date</th>
+                                    <th>Provider</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Smith</td>
+                                    <td>Annual Physical</td>
+                                    <td>08/01/2025</td>
+                                    <td>Dr. Johnson</td>
+                                    <td><span class="status-badge status-completed">Complete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Maria Rodriguez</td>
+                                    <td>Follow-up Visit</td>
+                                    <td>08/05/2025</td>
+                                    <td>Dr. Johnson</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Emily Davis</td>
+                                    <td>Lab Review</td>
+                                    <td>08/03/2025</td>
+                                    <td>Dr. Johnson</td>
+                                    <td><span class="status-badge status-completed">Complete</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medications Page -->
+            <div id="medications" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Medication Management</h1>
+                    <p class="page-subtitle">Prescriptions and medication history</p>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Drug Interaction Alert:</strong> 3 potential interactions detected. Review recommended.
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Active Prescriptions</div>
+                    <div class="card-content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Medication</th>
+                                    <th>Dosage</th>
+                                    <th>Prescribed Date</th>
+                                    <th>Refills Left</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Smith</td>
+                                    <td>Metformin</td>
+                                    <td>500mg BID</td>
+                                    <td>07/15/2025</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>Robert Johnson</td>
+                                    <td>Lisinopril</td>
+                                    <td>10mg QD</td>
+                                    <td>07/20/2025</td>
+                                    <td>5</td>
+                                </tr>
+                                <tr>
+                                    <td>Emily Davis</td>
+                                    <td>Synthroid</td>
+                                    <td>75mcg QD</td>
+                                    <td>08/01/2025</td>
+                                    <td>3</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lab Results Page -->
+            <div id="lab-results" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Laboratory Results</h1>
+                    <p class="page-subtitle">Lab tests and diagnostic results</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Pending Results</div>
+                    <div class="card-content">
+                        <ul class="record-list">
+                            <li class="record-item">
+                                <div>
+                                    <h4>Maria Rodriguez - CBC w/ Differential</h4>
+                                    <p>Ordered: 08/05/2025 | Expected: 08/07/2025</p>
+                                </div>
+                                <span class="status-badge status-pending">Pending</span>
+                            </li>
+                            <li class="record-item">
+                                <div>
+                                    <h4>John Smith - Lipid Panel</h4>
+                                    <p>Ordered: 08/01/2025 | Expected: 08/06/2025</p>
+                                </div>
+                                <span class="status-badge status-urgent">Critical</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Recent Results</div>
+                    <div class="card-content">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Patient</th>
+                                    <th>Test</th>
+                                    <th>Result</th>
+                                    <th>Reference Range</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Emily Davis</td>
+                                    <td>TSH</td>
+                                    <td>2.5 mIU/L</td>
+                                    <td>0.4-4.0 mIU/L</td>
+                                    <td>08/03/2025</td>
+                                </tr>
+                                <tr>
+                                    <td>Robert Johnson</td>
+                                    <td>HbA1c</td>
+                                    <td style="color: #e74c3c;">8.2%</td>
+                                    <td>&lt;7%</td>
+                                    <td>07/30/2025</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointments Page -->
+            <div id="appointments" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Appointment Scheduler</h1>
+                    <p class="page-subtitle">Manage patient appointments and scheduling</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Today's Schedule</div>
+                    <div class="card-content">
+                        <div class="chart-placeholder">
+                            📅 Today: 34 appointments scheduled
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Billing Page -->
+            <div id="billing" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Billing & Insurance</h1>
+                    <p class="page-subtitle">Financial management and insurance claims</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">$45,230</div>
+                        <div class="stat-label">Outstanding Claims</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">23</div>
+                        <div class="stat-label">Pending Claims</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reports Page -->
+            <div id="reports" class="page">
+                <div class="page-header">
+                    <h1 class="page-title">Reports & Analytics</h1>
+                    <p class="page-subtitle">Practice analytics and reporting</p>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">Practice Performance</div>
+                    <div class="card-content">
+                        <div class="chart-placeholder">
+                            📊 Analytics Dashboard - Patient Volume, Revenue, Outcomes
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div id="add-patient" class="modal">
+        <div class="modal-content">
+            <h2>Add New Patient</h2>
+            <form>
+                <div class="form-group">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Last Name</label>
+                    <input type="text" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Date of Birth</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Insurance Provider</label>
+                    <select class="form-select">
+                        <option>BlueCross BlueShield</option>
+                        <option>Aetna</option>
+                        <option>Cigna</option>
+                        <option>United Healthcare</option>
+                    </select>
+                </div>
+                <div style="text-align: right;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('add-patient')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Patient</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="patient-detail" class="modal">
+        <div class="modal-content">
+            <h2>Patient Details - John Smith</h2>
+            <div class="alert alert-info">
+                <strong>Patient ID:</strong> 12345678 | <strong>DOB:</strong> 01/15/1978 | <strong>Age:</strong> 47
+            </div>
+            <h3>Recent Visits</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Diagnosis</th>
+                        <th>Provider</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>08/01/2025</td>
+                        <td>Annual Physical</td>
+                        <td>Type 2 Diabetes</td>
+                        <td>Dr. Johnson</td>
+                    </tr>
+                    <tr>
+                        <td>02/15/2025</td>
+                        <td>Follow-up</td>
+                        <td>Hypertension</td>
+                        <td>Dr. Johnson</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="text-align: right; margin-top: 1rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('patient-detail')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 'dashboard';
+        
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            currentPage = pageId;
+        }
+        
+        function showModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.
